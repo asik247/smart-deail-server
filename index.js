@@ -30,16 +30,23 @@ async function run() {
         const mydb = client.db('smartDeails');
         const productsColl = mydb.collection('products')
         //TODO:Get method all data using find;
-        app.get('/products',async (req,res)=>{
-            const projectFields = {title:1,condition:1}
-            const cursor = productsColl.find().project(projectFields);
+        app.get('/products', async (req, res) => {
+            const email = req.query.email;
+            console.log(email);
+
+            const query = {};
+            if (email) {
+                query.email = email;  // ✅ সঠিকভাবে query set
+            }
+
+            const cursor = productsColl.find(query);  // ✅ query pass করতে হবে
             const result = await cursor.toArray();
-            res.send(result)
+            res.send(result);
         })
         //TODO:Get method but specifiq id use and fetch data usign findOne;
-        app.get('/products/:id',async(req,res)=>{
+        app.get('/products/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id:new ObjectId(id)};
+            const query = { _id: new ObjectId(id) };
             const result = await productsColl.findOne(query)
             res.send(result)
         })
@@ -50,23 +57,23 @@ async function run() {
             res.send(result);
         })
         //TODO:Update method using patch;
-        app.patch('/products/:id',async (req,res)=>{
+        app.patch('/products/:id', async (req, res) => {
             const allProducts = req.body;
             const id = req.params.id;
-            const query = {_id:new ObjectId(id)};
+            const query = { _id: new ObjectId(id) };
             const update = {
-                $set:{
-                    name:allProducts.name,
-                    price:allProducts.price
+                $set: {
+                    name: allProducts.name,
+                    price: allProducts.price
                 }
             }
-            const result = await productsColl.updateOne(query,update);
+            const result = await productsColl.updateOne(query, update);
             res.send(result)
         })
         //TODO: Delete method using delete;
-        app.delete('/products/:id',async (req,res)=>{
+        app.delete('/products/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id:new ObjectId(id)};
+            const query = { _id: new ObjectId(id) };
             const result = await productsColl.deleteOne(query);
             res.send(result)
         })
