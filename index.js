@@ -81,7 +81,13 @@ async function run() {
         })
         //TODO All Bids get;
         app.get('/bids',async(req,res)=>{
-            const cursor = bidsColl.find();
+            const email = req.query.email;
+            // console.log(buyer_email);
+            const query = {}
+            if(email){
+                query.buyer_email = email
+            }
+            const cursor = bidsColl.find(query);
             const result = await cursor.toArray();
             res.send(result)
         })
