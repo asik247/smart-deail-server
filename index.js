@@ -29,17 +29,19 @@ async function run() {
         //! create mydb and productsColl;
         const mydb = client.db('smartDeails');
         const productsColl = mydb.collection('products')
+        //! Bids Coll;
+        const bidsColl = mydb.collection('bids')
         //TODO:Get method all data using find;
         app.get('/products', async (req, res) => {
             const email = req.query.email;
-            console.log(email);
-
+            // const cate = req.query.category
+            // console.log(cate);
+            // console.log(email);
             const query = {};
             if (email) {
-                query.email = email;  // ✅ সঠিকভাবে query set
+                query.email = email;  
             }
-
-            const cursor = productsColl.find(query);  // ✅ query pass করতে হবে
+            const cursor = productsColl.find(query);  
             const result = await cursor.toArray();
             res.send(result);
         })
@@ -75,6 +77,12 @@ async function run() {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
             const result = await productsColl.deleteOne(query);
+            res.send(result)
+        })
+        //TODO All Bids get;
+        app.get('/bids',async(req,res)=>{
+            const cursor = bidsColl.find();
+            const result = await cursor.toArray();
             res.send(result)
         })
 
