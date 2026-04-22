@@ -39,9 +39,9 @@ async function run() {
             // console.log(email);
             const query = {};
             if (email) {
-                query.email = email;  
+                query.email = email;
             }
-            const cursor = productsColl.find(query);  
+            const cursor = productsColl.find(query);
             const result = await cursor.toArray();
             res.send(result);
         })
@@ -80,15 +80,25 @@ async function run() {
             res.send(result)
         })
         //TODO All Bids get;
-        app.get('/bids',async(req,res)=>{
+        app.get('/bids', async (req, res) => {
             const email = req.query.email;
             // console.log(buyer_email);
             const query = {}
-            if(email){
+            if (email) {
                 query.buyer_email = email
             }
             const cursor = bidsColl.find(query);
             const result = await cursor.toArray();
+            res.send(result)
+        })
+        //TODO Delete Bids using id mehod delete;
+        app.delete('/bids/:id',async(req,res)=>{
+            const id = req.params.id;
+            const query = {_id:new ObjectId(id)}
+            console.log(query);
+            // console.log(id);
+            // res.send()
+            const result = await bidsColl.deleteOne(query);
             res.send(result)
         })
 
