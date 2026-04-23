@@ -31,6 +31,8 @@ async function run() {
         const productsColl = mydb.collection('products')
         //! Bids Coll;
         const bidsColl = mydb.collection('bids')
+        //! User Coll;
+        const userColl = mydb.collection('users')
         //TODO:Get method all data using find;
         app.get('/products', async (req, res) => {
             const email = req.query.email;
@@ -99,6 +101,12 @@ async function run() {
             // console.log(id);
             // res.send()
             const result = await bidsColl.deleteOne(query);
+            res.send(result)
+        })
+        //TODO UserColl data post method code here;
+        app.post('/users',async(req,res)=>{
+            const newUsers = req.body;
+            const result = await userColl.insertOne(newUsers);
             res.send(result)
         })
 
