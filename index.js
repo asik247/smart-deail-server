@@ -94,9 +94,9 @@ async function run() {
             res.send(result)
         })
         //TODO Delete Bids using id mehod delete;
-        app.delete('/bids/:id',async(req,res)=>{
+        app.delete('/bids/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id:new ObjectId(id)}
+            const query = { _id: new ObjectId(id) }
             console.log(query);
             // console.log(id);
             // res.send()
@@ -104,10 +104,20 @@ async function run() {
             res.send(result)
         })
         //TODO UserColl data post method code here;
-        app.post('/users',async(req,res)=>{
+        app.post('/users', async (req, res) => {
             const newUsers = req.body;
-            const result = await userColl.insertOne(newUsers);
-            res.send(result)
+            //! cheack email then data post code hre;
+            const email = req.body.email;
+            const query = { email: email };
+            const existingUser = await userColl.findOne(query);
+            if (existingUser) {
+                res.send({ message: 'user already exits' })
+            }
+            else {
+                const result = await userColl.insertOne(newUsers);
+                res.send(result)
+            }
+
         })
 
 
