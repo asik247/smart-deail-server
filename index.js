@@ -81,10 +81,16 @@ async function run() {
             const result = await productsColl.deleteOne(query);
             res.send(result)
         })
+        //TODO: Bids Post method;
+        app.post('/bids',async(req,res)=>{
+            const newBids = req.body;
+            const result = await bidsColl.insertOne(newBids);
+            res.send(result)
+        })
         //TODO All Bids get;
         app.get('/bids', async (req, res) => {
+            //? Filer then email match then get same data;
             const email = req.query.email;
-            // console.log(buyer_email);
             const query = {}
             if (email) {
                 query.buyer_email = email
@@ -101,6 +107,14 @@ async function run() {
             // console.log(id);
             // res.send()
             const result = await bidsColl.deleteOne(query);
+            res.send(result)
+        })
+        //TODO: Specifiqe Product bid collected cod here;
+        app.get('/products/bids/:thisProductId',async(req,res)=>{
+            const productId = req.params.thisProductId;
+            const query = {product:productId}
+            const cursor = bidsColl.find(query).sort({bid_price:-1})
+            const result = await cursor.toArray();
             res.send(result)
         })
         //TODO UserColl data post method code here;
@@ -120,8 +134,8 @@ async function run() {
 
         })
         //? Latest Products api here;
-        app.get('/latestProducts',async(req,res)=>{
-            const cursor = productsColl.find().sort({created_at: -1}).limit(6)
+        app.get('/latestProducts', async (req, res) => {
+            const cursor = productsColl.find().sort({ created_at: -1 }).limit(6)
             const result = await cursor.toArray()
             res.send(result)
         })
