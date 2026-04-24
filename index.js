@@ -119,6 +119,12 @@ async function run() {
             }
 
         })
+        //? Latest Products api here;
+        app.get('/latestProducts',async(req,res)=>{
+            const cursor = productsColl.find().sort({created_at: -1}).limit(6)
+            const result = await cursor.toArray()
+            res.send(result)
+        })
 
 
 
