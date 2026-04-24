@@ -117,6 +117,16 @@ async function run() {
             const result = await cursor.toArray();
             res.send(result)
         })
+        //TODO: MyBids get db;
+        app.get('/bids',async(req,res)=>{
+            const query = {}
+            if(query.email){
+                query.buyer_email = email
+            }
+            const cursor = bidsColl.find(query);
+            const result = await cursor.toArray();
+            res.send(result)
+        })
         //TODO UserColl data post method code here;
         app.post('/users', async (req, res) => {
             const newUsers = req.body;
