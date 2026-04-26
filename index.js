@@ -6,6 +6,10 @@ const port = process.env.PORT || 3000;
 // TODO Midleware code here;
 app.use(cors());
 app.use(express.json());
+const logger = (req,res,next)=>{
+    console.log('logger information middlware');
+    next();
+}
 // ! uri code here;
 const uri = "mongodb+srv://smartDeails:5GUb0QIfeNfUO4Gd@cluster0.fdzc9ua.mongodb.net/?appName=Cluster0";
 
@@ -82,22 +86,10 @@ async function run() {
             res.send(result)
         })
         //TODO: Bids Post method;
-        app.post('/bids',async(req,res)=>{
+        app.post('/bids', async (req, res) => {
             const newBids = req.body;
             // console.log(newBids);
             const result = await bidsColl.insertOne(newBids);
-            res.send(result)
-        })
-        //TODO All Bids get;
-        app.get('/bids', async (req, res) => {
-            //? Filer then email match then get same data;
-            const email = req.query.email;
-            const query = {}
-            if (email) {
-                query.buyer_email = email
-            }
-            const cursor = bidsColl.find(query);
-            const result = await cursor.toArray();
             res.send(result)
         })
         //TODO Delete Bids using id mehod delete;
@@ -110,18 +102,21 @@ async function run() {
             const result = await bidsColl.deleteOne(query);
             res.send(result)
         })
+
         //TODO: Specifiqe Product bid collected cod here;
-        app.get('/products/bids/:thisProductId',async(req,res)=>{
+        app.get('/products/bids/:thisProductId', async (req, res) => {
             const productId = req.params.thisProductId;
-            const query = {product:productId}
-            const cursor = bidsColl.find(query).sort({bid_price:-1})
+            const query = { product: productId }
+            const cursor = bidsColl.find(query).sort({ bid_price: -1 })
             const result = await cursor.toArray();
             res.send(result)
         })
         //TODO: MyBids get db;
-        app.get('/bids',async(req,res)=>{
+        app.get('/bids', logger, async (req, res) => {
+            //! Recive client site accessToken;
+            // console.log('headder',req.headers);
             const query = {}
-            if(query.email){
+            if (query.email) {
                 query.buyer_email = email
             }
             const cursor = bidsColl.find(query);
