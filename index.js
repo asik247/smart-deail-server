@@ -114,7 +114,7 @@ async function run() {
         //TODO: MyBids get db;
         app.get('/bids', logger, async (req, res) => {
             //! Recive client site accessToken;
-            // console.log('headder',req.headers);
+            console.log('headder',req.headers);
             const query = {}
             if (query.email) {
                 query.buyer_email = email
