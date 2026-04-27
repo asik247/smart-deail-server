@@ -7,7 +7,11 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 const logger = (req,res,next)=>{
-    console.log('logger information middlware');
+    console.log('Logger Information');
+    next();
+}
+const verifyFirebase = (req,res,next)=>{
+    console.log('Verifyfirebase');
     next();
 }
 // ! uri code here;
@@ -112,9 +116,9 @@ async function run() {
             res.send(result)
         })
         //TODO: MyBids get db;
-        app.get('/bids', logger, async (req, res) => {
+        app.get('/bids',logger,verifyFirebase, async (req, res) => {
             //! Recive client site accessToken;
-            console.log('headder',req.headers);
+            console.log('AccessToken',req.headers.authorization);
             const query = {}
             if (query.email) {
                 query.buyer_email = email
