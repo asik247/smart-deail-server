@@ -6,12 +6,22 @@ const port = process.env.PORT || 3000;
 // TODO Midleware code here;
 app.use(cors());
 app.use(express.json());
+//! Validation server site for using middleware✅
 const logger = (req,res,next)=>{
     console.log('Logger Information');
     next();
 }
-const verifyFirebase = (req,res,next)=>{
-    console.log('Verifyfirebase');
+const verifyFireBaseToken = (req,res,next)=>{
+    console.log('Verifyfirebase',req.headers.authorization);
+    if(!req.headers.authorization){
+        return req.status(401).send({message:'unauthorized access'})
+    }
+    const token = req.headers.authorization.split(" ")[1]
+    console.log(token);
+    if(!token){
+        return res.status(401).send({message:'unauthorzed access'})
+    }
+    
     next();
 }
 // ! uri code here;
@@ -116,8 +126,8 @@ async function run() {
             res.send(result)
         })
         //TODO: MyBids get db;
-        app.get('/bids',logger,verifyFirebase, async (req, res) => {
-            //! Recive client site accessToken;
+        app.get('/bids',logger,verifyFireBaseToken, async (req, res) => {
+            //! Recive client site accessToken✅;
             console.log('AccessToken',req.headers.authorization);
             const query = {}
             if (query.email) {
