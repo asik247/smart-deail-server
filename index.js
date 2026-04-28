@@ -12,9 +12,9 @@ const logger = (req,res,next)=>{
     next();
 }
 const verifyFireBaseToken = (req,res,next)=>{
-    console.log('Verifyfirebase',req.headers.authorization);
+    // console.log('Verifyfirebase',req.headers.authorization);
     if(!req.headers.authorization){
-        return req.status(401).send({message:'unauthorized access'})
+        return req.status(401).send({message:'unauthorized access1'})
     }
     const token = req.headers.authorization.split(" ")[1]
     console.log(token);
@@ -128,7 +128,7 @@ async function run() {
         //TODO: MyBids get db;
         app.get('/bids',logger,verifyFireBaseToken, async (req, res) => {
             //! Recive client site accessToken✅;
-            console.log('AccessToken',req.headers.authorization);
+            // console.log('AccessToken',req.headers.authorization);
             const query = {}
             if (query.email) {
                 query.buyer_email = email
@@ -186,3 +186,4 @@ app.listen(port, () => {
  * 5GUb0QIfeNfUO4Gd
  * smartDeails
  */
+//sokel  code stat heobe
