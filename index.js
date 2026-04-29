@@ -6,24 +6,24 @@ const port = process.env.PORT || 3000;
 // TODO Midleware code here;
 app.use(cors());
 app.use(express.json());
-//! Validation server site for using middleware✅
 const logger = (req,res,next)=>{
     console.log('Logger Information');
     next();
 }
-const verifyFireBaseToken = (req,res,next)=>{
-    // console.log('Verifyfirebase',req.headers.authorization);
+// Todo: verifyFirebaseToken;
+const verifyFireBaseToken = (req,res,next) =>{
     if(!req.headers.authorization){
-        return req.status(401).send({message:'unauthorized access1'})
+        return res.status(401).send({message:'unauthorized access'})
     }
-    const token = req.headers.authorization.split(" ")[1]
-    console.log(token);
+    const token = req.headers.authorization.split(' ')[1];
     if(!token){
-        return res.status(401).send({message:'unauthorzed access'})
+        return res.status(401).send({message:'unauthorized access'})
     }
-    
-    next();
+    // validation token
+    next()
 }
+
+
 // ! uri code here;
 const uri = "mongodb+srv://smartDeails:5GUb0QIfeNfUO4Gd@cluster0.fdzc9ua.mongodb.net/?appName=Cluster0";
 
@@ -127,8 +127,8 @@ async function run() {
         })
         //TODO: MyBids get db;
         app.get('/bids',logger,verifyFireBaseToken, async (req, res) => {
-            //! Recive client site accessToken✅;
-            // console.log('AccessToken',req.headers.authorization);
+            //!accessToken receive;
+            // console.log(req.headers.authorization);
             const query = {}
             if (query.email) {
                 query.buyer_email = email
@@ -182,8 +182,4 @@ run().catch(console.dir)
 app.listen(port, () => {
     console.log(`This server runing in port: ${port}`);
 })
-/**
- * 5GUb0QIfeNfUO4Gd
- * smartDeails
- */
-//sokel  code stat heobe
+
