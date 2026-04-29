@@ -2,25 +2,43 @@ const express = require('express');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require('cors');
 const app = express();
+//!Firebase admin;
+const admin = require("firebase-admin");
 const port = process.env.PORT || 3000;
+//!firebase relative;
+const serviceAccount = require("./smart-deails-firebase-adminsdk.json");
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+});
+
 // TODO Midleware code here;
 app.use(cors());
 app.use(express.json());
-const logger = (req,res,next)=>{
+const logger = (req, res, next) => {
     console.log('Logger Information');
     next();
 }
 // Todo: verifyFirebaseToken;
-const verifyFireBaseToken = (req,res,next) =>{
-    if(!req.headers.authorization){
-        return res.status(401).send({message:'unauthorized access'})
+const verifyFireBaseToken = async (req, res, next) => {
+    if (!req.headers.authorization) {
+        return res.status(401).send({ message: 'unauthorized access' })
     }
     const token = req.headers.authorization.split(' ')[1];
-    if(!token){
-        return res.status(401).send({message:'unauthorized access'})
+    if (!token) {
+        return res.status(401).send({ message: 'unauthorized access' })
     }
     // validation token
-    next()
+    try {
+        const tokenInfo = await admin.auth().verifyIdToken(token);
+        req.token_email = tokenInfo.email;
+        console.log('After token validation', tokenInfo);
+        next()
+    }
+    catch {
+        console.log('Invalid token');
+        return res.status(401).send({ message: 'unauthorized access' })
+    }
+
 }
 
 
@@ -57,6 +75,7 @@ async function run() {
             // const cate = req.query.category
             // console.log(cate);
             // console.log(email);
+            console.log(req.headers.authorization);
             const query = {};
             if (email) {
                 query.email = email;
@@ -118,7 +137,7 @@ async function run() {
         })
 
         //TODO: Specifiqe Product bid collected cod here;
-        app.get('/products/bids/:thisProductId', async (req, res) => {
+        app.get('/products/bids/:thisProductId',verifyFireBaseToken, async (req, res) => {
             const productId = req.params.thisProductId;
             const query = { product: productId }
             const cursor = bidsColl.find(query).sort({ bid_price: -1 })
@@ -126,11 +145,16 @@ async function run() {
             res.send(result)
         })
         //TODO: MyBids get db;
-        app.get('/bids',logger,verifyFireBaseToken, async (req, res) => {
+        app.get('/bids', logger, verifyFireBaseToken, async (req, res) => {
             //!accessToken receive;
             // console.log(req.headers.authorization);
+            // console.log(req);
+            const email = req.query.email;
             const query = {}
-            if (query.email) {
+            if (email) {
+                if(email !== req.token_email){
+                    return res.status(403).send({message:'forbiding access'})
+                }
                 query.buyer_email = email
             }
             const cursor = bidsColl.find(query);
