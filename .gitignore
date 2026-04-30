@@ -1,2 +1,3 @@
 node_modules
-smart-deails-firebase-adminsdk.json
+.env
+smart-deails-firebase-key.json
