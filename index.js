@@ -133,7 +133,8 @@ async function run() {
         })
 
         //TODO: Specifiqe Product bid collected cod here;
-        app.get('/products/bids/:thisProductId', async (req, res) => {
+        app.get('/products/bids/:thisProductId',verifyJWTToken, async (req, res) => {
+           
             const productId = req.params.thisProductId;
             const query = { product: productId }
             const cursor = bidsColl.find(query).sort({ bid_price: -1 })
