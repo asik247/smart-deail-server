@@ -4,43 +4,14 @@ const cors = require('cors');
 require('dotenv').config()
 const app = express();
 //!Firebase admin;
-const admin = require("firebase-admin");
 const port = process.env.PORT || 3000;
 //!firebase relative;
-const serviceAccount = require("./smart-deails-firebase-key.json");
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-});
-
 // TODO Midleware code here;
 app.use(cors());
 app.use(express.json());
 // Todo: verifyFirebaseToken;
-const verifyFireBaseToken = async (req, res, next) => {
-    const authorized = req.headers.authorization;
-    if (!authorized) {
-        return res.status(401).send({ message: 'unauthorized access' })
-    }
-    const token = authorized.split(' ')[1];
-    if (!token) {
-        return res.status(401).send({ message: 'unauthorized access' })
-    }
-    //?verify token;
-    try {
-        const tokenValidation = await admin.auth().verifyIdToken(token);
-        req.token_email = tokenValidation.email
-        next();
-    }
-    catch {
-        return res.status(401).send({ message: 'unauthorized access' })
-    }
-
-}
-
-
 // ! uri code here;
 const uri = `mongodb+srv://${process.env.BD_USER}:${process.env.BD_PASS}@cluster0.fdzc9ua.mongodb.net/?appName=Cluster0`;
-
 // ! db client code here;
 const client = new MongoClient(uri, {
     serverApi: {
@@ -141,16 +112,11 @@ async function run() {
             res.send(result)
         })
         //TODO: MyBids get db;
-        app.get('/bids', verifyFireBaseToken, async (req, res) => {
+        app.get('/bids', async (req, res) => {
             //!accessToken receive;
-
             const email = req.query.email;
             const query = {}
             if (email) {
-                if (email !== req.token_email) {
-                    return res.status(403).send({ message: 'firbiding access ' })
-                }
-
                 query.buyer_email = email
             }
             const cursor = bidsColl.find(query);
