@@ -6,12 +6,35 @@ const app = express();
 //? jwt require;
 const jwt = require('jsonwebtoken');
 //!Firebase admin;
+const admin = require("firebase-admin");
 const port = process.env.PORT || 3000;
 //!firebase relative;
+const serviceAccount = require("./smart-deails-firebase-key.json");
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+});
 // TODO Midleware code here;
 app.use(cors());
 app.use(express.json());
 // Todo: verifyFirebaseToken;
+const verifyFireBaseToken = async (req, res, next) => {
+    // console.log('Headder:-',req.headers);
+    const authorzed = req.headers.authorization;
+    if (!authorzed) {
+        return res.status(401).send({ message: 'unauthorized access' })
+    }
+    const token = authorzed.split(' ')[1]
+    // console.log(token);
+    //?verify;
+    try {
+        const decoded = await admin.auth().verifyIdToken(token);
+        req.token_email = decoded.email
+        next();
+    }
+    catch {
+        return res.status(401).send({ messag: 'unauthorized access' })
+    }
+}
 //!jwtTokenVerify;
 const verifyJWTToken = (req, res, next) => {
     const authorized = req.headers.authorization;
@@ -88,7 +111,10 @@ async function run() {
             res.send(result)
         })
         //TODO: Post method usign insertOne;
-        app.post('/products', async (req, res) => {
+        app.post('/products', verifyFireBaseToken, async (req, res) => {
+            //? receive authorization;
+            // console.log('Authorization:-', req.headers.authorization);
+            // console.log('tokem_email',req.token_email);
             const newProduct = req.body;
             const result = await productsColl.insertOne(newProduct);
             res.send(result);
@@ -133,8 +159,8 @@ async function run() {
         })
 
         //TODO: Specifiqe Product bid collected cod here;
-        app.get('/products/bids/:thisProductId',verifyJWTToken, async (req, res) => {
-           
+        app.get('/products/bids/:thisProductId', verifyJWTToken, async (req, res) => {
+
             const productId = req.params.thisProductId;
             const query = { product: productId }
             const cursor = bidsColl.find(query).sort({ bid_price: -1 })
@@ -147,8 +173,8 @@ async function run() {
             const email = req.query.email;
             const query = {}
             if (email) {
-                if(email !== req.token_email){
-                    return res.status(403).send({message:'foribiding access'})
+                if (email !== req.token_email) {
+                    return res.status(403).send({ message: 'foribiding access' })
                 }
                 query.buyer_email = email
             }
