@@ -168,7 +168,7 @@ async function run() {
             res.send(result)
         })
         //TODO: MyBids get db;
-        app.get('/bids', verifyJWTToken, async (req, res) => {
+        app.get('/bids', verifyFireBaseToken, async (req, res) => {
             //!accessToken receive;
             const email = req.query.email;
             const query = {}
