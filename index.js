@@ -9,7 +9,8 @@ const jwt = require('jsonwebtoken');
 const admin = require("firebase-admin");
 const port = process.env.PORT || 3000;
 //!firebase relative;
-const serviceAccount = require("./smart-deails-firebase-key.json");
+const decoded = Buffer.from(process.env.FIREBASE_SERVIC_KEY, "base64").toString("utf8");
+const serviceAccount = JSON.parse(decoded);
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 });
@@ -215,7 +216,7 @@ async function run() {
 
 
         // ? Ping message code;
-        await client.db("admin").command({ ping: 1 })
+        //await client.db("admin").command({ ping: 1 })
         console.log("Pinged your deployment.u successfully connected to MongoDB!");
     }
     finally {
@@ -224,7 +225,10 @@ async function run() {
 }
 run().catch(console.dir)
 //?Listing code here;
-app.listen(port, () => {
-    console.log(`This server runing in port: ${port}`);
-})
+// app.listen(port, () => {
+//     console.log(`This server runing in port: ${port}`);
+// })
+run().catch(console.dir);
+
+module.exports = app;
 

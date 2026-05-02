@@ -1,3 +1,4 @@
 node_modules
 .env
 smart-deails-firebase-key.json
+.vercel
