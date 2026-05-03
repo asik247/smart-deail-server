@@ -9,8 +9,8 @@ const jwt = require('jsonwebtoken');
 const admin = require("firebase-admin");
 const port = process.env.PORT || 3000;
 //!firebase relative;
-const decoded = Buffer.from(process.env.FIREBASE_SERVIC_KEY, "base64").toString("utf8");
-const serviceAccount = JSON.parse(decoded);
+const serviceAccount = require("./smart-deails-firebase-token.json");
+
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 });
@@ -160,7 +160,7 @@ async function run() {
         })
 
         //TODO: Specifiqe Product bid collected cod here;
-        app.get('/products/bids/:thisProductId', verifyJWTToken, async (req, res) => {
+        app.get('/products/bids/:thisProductId', verifyFireBaseToken, async (req, res) => {
 
             const productId = req.params.thisProductId;
             const query = { product: productId }
@@ -216,7 +216,7 @@ async function run() {
 
 
         // ? Ping message code;
-        //await client.db("admin").command({ ping: 1 })
+        // await client.db("admin").command({ ping: 1 })
         console.log("Pinged your deployment.u successfully connected to MongoDB!");
     }
     finally {
@@ -225,10 +225,8 @@ async function run() {
 }
 run().catch(console.dir)
 //?Listing code here;
-// app.listen(port, () => {
-//     console.log(`This server runing in port: ${port}`);
-// })
-run().catch(console.dir);
+app.listen(port, () => {
+    console.log(`This server runing in port: ${port}`);
+})
 
-module.exports = app;
 
